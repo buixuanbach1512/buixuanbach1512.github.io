@@ -1,0 +1,146 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %} Check out  {% endblock %}
+{% block content %}
+
+<!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Check out</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'home' %}">Home</a>
+                            <span>Check out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Breadcrumb Section End -->
+
+<div class="container mt-4 mb-4">
+    <div class="row">
+		<div class="col-lg-6">
+			<div class="box-element" id="form-wrapper">
+				<form id="form">
+					<div id="user-info">
+						<div class="form-field">
+							<input required class="form-control" type="text" name="name" placeholder="Họ Tên..">
+						</div>
+						<div class="form-field">
+							<input required class="form-control" type="email" name="email" placeholder="Email..">
+						</div>
+					</div>
+					
+					<div id="shipping-info">
+						<hr>
+						<p>Thông tin vận chuyển:</p>
+						<hr>
+						<div class="form-field">
+							<input class="form-control" type="text" name="address" placeholder="Địa chỉ..">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="phone" placeholder="Số điện thoại..">
+						</div>
+					</div>
+
+					<hr>
+					<input id="form-button" class="primary-btn btn-block" type="submit" value="Continue">
+				</form>
+			</div>
+
+			<br>
+			<div class="box-element hidden" id="payment-info">
+				<small>Paypal Options</small>
+				<input id="make-payment" class="primary-btn btn-block" type="submit" value="Thanh toán"  />
+			</div>
+			
+		</div>
+
+		<div class="col-lg-6">
+			<div class="box-element">
+				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Trở về giỏ hàng</a>
+				<hr>
+				<h3>Giỏ hàng</h3>
+				<hr>
+                {% for item in items %}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{item.product.pro_img.url}}"></div>
+					<div style="flex:2"><p>{{item.product.pro_name}}</p></div>
+					<div style="flex:1"><p>{{item.product.pro_price}}</p></div>
+					<div style="flex:1"><p>x{{item.quantity}}</p></div>
+				</div>
+                {% endfor %}
+				<p>Sản phẩm: {{order.get_cart_items}}</p>
+				<p>Tổng tiền: {{order.get_cart_total}}<sup>đ</sup></p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	var user = '{{request.user}}'
+	var total = '{{order.get_cart_total}}'
+	
+	if( user != 'AnonymousUser'){
+		document.getElementById('user-info').innerHTML = ''
+	}
+
+	var form = document.getElementById('form')
+	form.addEventListener('submit', function(e){
+		e.preventDefault()
+		console.log('Form Submitted ...')
+		document.getElementById('form-button').classList.add("hidden")
+		document.getElementById('payment-info').classList.remove("hidden")
+	})
+
+	document.getElementById('make-payment').addEventListener('click', function(e){
+		submitFormData()
+	})
+
+
+	function submitFormData(){
+		console.log('Payment button click')
+
+		var userFormData = {
+			'name' : null,
+			'email' : null,
+			'total' : total,
+		}
+
+		var shippingInfo = {
+			'address' : form.address.value,
+			'phone' : form.phone.value,
+		}
+
+		if(user == 'AnonymousUser') {
+			userFormData.name = form.name.value
+			userFormData.email = form.email.value
+		}
+
+		var url = '/process_order/'
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken,
+			},
+			body:JSON.stringify({'form': userFormData, 'shipping': shippingInfo
+			})
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			console.log('Success:', data);
+			alert('Transaction completed');
+			window.location.href = "{% url 'home' %}"
+		})
+	}
+
+
+</script>
+
+{% endblock content %}

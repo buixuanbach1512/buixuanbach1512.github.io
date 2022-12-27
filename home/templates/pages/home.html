@@ -1,0 +1,81 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %} CB-Shop  {% endblock %}
+{% block content %}
+    <div class="slider mb-4">
+        <div class="container">
+            <div class="hero__item set-bg responsive-image" data-setbg="{% static 'img/slider/slider.jpg' %}">
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <section class="categories">
+            <div class="container">
+                <div class="row">
+                    <div class="categories__slider owl-carousel">
+                        {% for cat in Categories  %}
+                        <div class="col-lg-3">
+                            <div class="categories__item set-bg" data-setbg="{{cat.cat_img.url}}">
+                                <h5><a href="{% url 'products' cat.id %}">{{cat.cat_name}}</a></h5>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    <!-- Categories Section End -->
+
+    <!-- Featured Section Begin -->
+    <section class="related-product">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div style="padding:50px"></div>
+                    <div class="section-title related__product__title">
+                        <h2>Sản Phẩm Mới Nhất</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for pro in Product %}                
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg" data-setbg="{{pro.pro_img.url}}">
+                            <ul class="product__item__pic__hover">
+                                <li><a href="{% url 'detail' pro.id %}"><i class="fa fa-eye"></i></a></li>
+                                <li><a data-product = {{pro.id}} data-action = "add" class="update-cart"><i class="fa fa-shopping-cart"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="product__item__text">
+                            <h6><a class="product_name" href="#">{{pro.pro_name}}</a></h6>
+                            <h5>{{pro.pro_price}}<sup>đ</sup></h5>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <!-- Featured Section End -->
+
+    <!-- Banner Begin -->
+    <div class="banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="banner__pic">
+                        <img src="{% static 'img/banner/banner.jpg' %}" alt="">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="banner__pic">
+                        <img src="{% static 'img/banner/banner-3.jpg' %}" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Banner End -->
+</div>
+{% endblock %}
